@@ -34,7 +34,7 @@ class ToDoListViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) //as! ToDoTableViewCell
         
         //cell.listLabel = itemArray[indexPath.row]
-        cell.textLabel?.text = itemArray[indexPath.row]
+//        cell.textLabel?.text = itemArray[indexPath.row]
         return cell
         //no
     }
