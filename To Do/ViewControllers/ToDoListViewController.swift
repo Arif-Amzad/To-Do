@@ -14,10 +14,18 @@ class ToDoListViewController: UITableViewController {
 
     var itemArray = ["Complete ML tutorials", "Go to tuition", "New app idea" ]
     
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: cellID)
+        
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
+            
+            itemArray = items
+        }
+        
     }
     
     
@@ -73,6 +81,8 @@ class ToDoListViewController: UITableViewController {
             
             print(textField.text!)
             self.itemArray.append(textField.text!)
+            
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             self.tableView.reloadData()
         }
         
