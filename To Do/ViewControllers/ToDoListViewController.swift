@@ -12,13 +12,14 @@ class ToDoListViewController: UITableViewController {
     
     let cellID = "ToDoItemCell"
 
-    let itemArray = ["Complete ML tutorials", "Go to tuition", "New app idea" ]
+    var itemArray = ["Complete ML tutorials", "Go to tuition", "New app idea" ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: cellID)
     }
+    
     
     
     //MARK - TableView DataSource Method
@@ -34,9 +35,8 @@ class ToDoListViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) //as! ToDoTableViewCell
         
         //cell.listLabel = itemArray[indexPath.row]
-//        cell.textLabel?.text = itemArray[indexPath.row]
+        cell.textLabel?.text = itemArray[indexPath.row]
         return cell
-        //no
     }
     
     
@@ -58,6 +58,32 @@ class ToDoListViewController: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
+    
+    
+    
+    //MARK - Add New Items
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add new To Do item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            
+            print(textField.text!)
+            self.itemArray.append(textField.text!)
+            self.tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        
+        alert.addAction(action)
+            
+        present(alert, animated: true, completion: nil)
+    }
 }
 
