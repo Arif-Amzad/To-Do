@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ToDoListViewController: UITableViewController {
     
@@ -14,15 +15,12 @@ class ToDoListViewController: UITableViewController {
 
     var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //tableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: cellID)
-        
-        print(dataFilePath!)
+                
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         loadDataFromStorage()
     }
@@ -31,16 +29,13 @@ class ToDoListViewController: UITableViewController {
     
     func loadDataFromStorage() {
 
-        if let data = try? Data(contentsOf: dataFilePath!){
-                
-            let decoder = PropertyListDecoder()
-                
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            }catch {
-                    
-                print("Error decoding item array, \(error)")
-            }
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+
+        do {
+            itemArray = try context.fetch(request)
+
+        }catch {
+            print("Error fetching data from context ===== \(error) =====")
         }
     }
     
@@ -62,9 +57,6 @@ class ToDoListViewController: UITableViewController {
         
         cell.textLabel?.text = item.title
         
-        //Ternary operator in swift
-        // value = condition ? valueIfTrue : valueIfFalse
-        
         cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
@@ -75,7 +67,10 @@ class ToDoListViewController: UITableViewController {
     //MARK - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        tableView.deselectRow(at: indexPath, animated: true)
+        //itemArray[indexPath.row].setValue("Completed", forKey: "title")
+        
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
@@ -93,23 +88,35 @@ class ToDoListViewController: UITableViewController {
         
         let alert = UIAlertController(title: "Add new To Do item", message: "", preferredStyle: .alert)
         
-        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+        let add = UIAlertAction(title: "Add", style: .default) { (action) in
             
-            let newItem = Item()
+            if !textField.text!.isEmpty {
+                
+                let newItem = Item(context: self.context)
+                
+                newItem.title = textField.text!
+                
+                newItem.done = false
+                
+                self.itemArray.append(newItem)
+                
+                self.saveFiles()
+            }
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .default) {
+            (action) in
             
-            newItem.title = textField.text!
-            
-            self.itemArray.append(newItem)
-            
-            self.saveFiles()
-    }
+            self.dismiss(animated: true, completion: nil)
+        }
         
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
         }
         
-        alert.addAction(action)
+        alert.addAction(cancel)
+        alert.addAction(add)
             
         present(alert, animated: true, completion: nil)
     }
@@ -118,20 +125,13 @@ class ToDoListViewController: UITableViewController {
     
     func saveFiles() {
         
-        let encoder = PropertyListEncoder()
-        
         do {
-            let data = try encoder.encode(self.itemArray)
-            
-            try data.write(to: dataFilePath!)
-            
+            try context.save()
         } catch {
-            
-            print("Error encoding item array \(error)")
+            print("Error saving context \(error)")
         }
         
         self.tableView.reloadData()
-
     }
 }
 
