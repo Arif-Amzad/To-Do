@@ -13,7 +13,6 @@
 		DD9D34FD232A99A200DFDCD6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD9D34FC232A99A200DFDCD6 /* Assets.xcassets */; };
 		DD9D3500232A99A200DFDCD6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DD9D34FE232A99A200DFDCD6 /* LaunchScreen.storyboard */; };
 		DDEA3CC523685041006DCF1D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEA3CC423685041006DCF1D /* Item.swift */; };
-		DDEA3CC92368517A006DCF1D /* ToDoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEA3CC82368517A006DCF1D /* ToDoTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +24,6 @@
 		DD9D34FF232A99A200DFDCD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DD9D3501232A99A200DFDCD6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDEA3CC423685041006DCF1D /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
-		DDEA3CC82368517A006DCF1D /* ToDoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDoTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,7 +73,6 @@
 			isa = PBXGroup;
 			children = (
 				DD1F7B1223686240006EB3F8 /* Views */,
-				DDEA3CC82368517A006DCF1D /* ToDoTableViewCell.swift */,
 				DD9D3501232A99A200DFDCD6 /* Info.plist */,
 				DDEA3CC623685046006DCF1D /* Data Model */,
 				DD77E4DD232BD59C009D4F47 /* ViewControllers */,
@@ -176,7 +173,6 @@
 				DDEA3CC523685041006DCF1D /* Item.swift in Sources */,
 				DD9D34F8232A99A200DFDCD6 /* ToDoListViewController.swift in Sources */,
 				DD9D34F6232A99A200DFDCD6 /* AppDelegate.swift in Sources */,
-				DDEA3CC92368517A006DCF1D /* ToDoTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
