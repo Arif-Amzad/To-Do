@@ -12,20 +12,41 @@ class ToDoListViewController: UITableViewController {
     
     let cellID = "ToDoItemCell"
 
-    var itemArray = ["Complete ML tutorials", "Go to tuition", "New app idea" ]
+    var itemArray = [Item]()
     
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: cellID)
+        //tableView.register(ToDoTableViewCell.self, forCellReuseIdentifier: cellID)
+                        
+        let newItem = Item()
+        newItem.title = "Find Mike"
+        itemArray.append(newItem)
+
+        let newItem2 = Item()
+        newItem2.title = "Find Mike 2"
+        itemArray.append(newItem2)
+
+
+        let newItem3 = Item()
+        newItem3.title = "Find Mike 3"
+        itemArray.append(newItem3)
         
-        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
+        loadListFromStorage()
+
+    }
+    
+    
+    
+    func loadListFromStorage() {
+        
+        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
             
             itemArray = items
+            
         }
-        
     }
     
     
@@ -40,10 +61,17 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) //as! ToDoTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         
-        //cell.listLabel = itemArray[indexPath.row]
-        cell.textLabel?.text = itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+        
+        cell.textLabel?.text = item.title
+        
+        //Ternary operator in swift
+        // value = condition ? valueIfTrue : valueIfFalse
+        
+        cell.accessoryType = item.done ? .checkmark : .none
+        
         return cell
     }
     
@@ -55,22 +83,24 @@ class ToDoListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         //print(itemArray[indexPath.row])
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }
-        else {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done //do the same as below comment
         
+//        if itemArray[indexPath.row].done == false {
+//
+//            itemArray[indexPath.row].done = true
+//        }
+//        else {
+//
+//            itemArray[indexPath.row].done = false
+//        }
+        
+        tableView.reloadData() // it reloads/ reRun the datasource method again.
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     
     
     //MARK - Add New Items
-    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
         var textField = UITextField()
@@ -79,8 +109,15 @@ class ToDoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-            print(textField.text!)
-            self.itemArray.append(textField.text!)
+            //print(textField.text!)
+            
+            let newItem = Item()
+            
+            newItem.title = textField.text!
+            
+            self.itemArray.append(newItem)
+            
+            //self.itemArray.append(textField.text!)
             
             self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             self.tableView.reloadData()
@@ -97,3 +134,16 @@ class ToDoListViewController: UITableViewController {
     }
 }
 
+
+
+
+
+//    func exampleForLearning() {
+//
+//        let primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+//
+//        for (n, prime) in primes.enumerated()
+//        {
+//            print("\(n) = \(prime)")
+//        }
+//    }
