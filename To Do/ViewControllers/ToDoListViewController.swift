@@ -27,20 +27,6 @@ class ToDoListViewController: UITableViewController {
     
     
     
-    func loadDataFromStorage() {
-
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
-
-        do {
-            itemArray = try context.fetch(request)
-
-        }catch {
-            print("Error fetching data from context ===== \(error) =====")
-        }
-    }
-    
-    
-    
     //MARK - TableView DataSource Method
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -123,6 +109,21 @@ class ToDoListViewController: UITableViewController {
     
     
     
+    func loadDataFromStorage(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+        //here "with" is external and "request" is internal parameter
+        
+        // Item.fetchRequest() has been added later for the function which will work without parameter viewed in viewDidLoad
+        do {
+            itemArray = try context.fetch(request)
+        }catch {
+            print("Error fetching data from context ===== \(error) =====")
+        }
+        
+         tableView.reloadData()
+    }
+    
+    
+    
     func saveFiles() {
         
         do {
@@ -132,6 +133,41 @@ class ToDoListViewController: UITableViewController {
         }
         
         self.tableView.reloadData()
+    }
+}
+
+
+//MARK: - Search bar methods
+extension ToDoListViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.predicate = predicate
+        
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        
+        request.sortDescriptors = [sortDescriptor]
+        
+        loadDataFromStorage(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text?.count == 0 {
+            
+            loadDataFromStorage()
+            
+            DispatchQueue.main.async { //this line close keyboad when search canceled, remove cursor from search box, delete thread that was running for this job
+                
+                searchBar.resignFirstResponder()
+            }
+        }
+        
+        loadDataFromStorage()
     }
 }
 
