@@ -15,7 +15,7 @@ class ToDoListViewController: UITableViewController {
 
     var itemArray = [Item]()
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext //medium to read,update,destroy our data, through this we will comunicate with our persistent container
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +32,6 @@ class ToDoListViewController: UITableViewController {
         
         return itemArray.count
     }
-    
-    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -80,7 +78,7 @@ class ToDoListViewController: UITableViewController {
                 
                 let newItem = Item(context: self.context)
                 
-                newItem.title = textField.text!
+                newItem.title = textField.text
                 
                 newItem.done = false
                 
@@ -102,6 +100,7 @@ class ToDoListViewController: UITableViewController {
         }
         
         alert.addAction(cancel)
+        
         alert.addAction(add)
             
         present(alert, animated: true, completion: nil)
@@ -109,6 +108,7 @@ class ToDoListViewController: UITableViewController {
     
     
     
+    //MARK: - Data Manipulation Methods
     func loadDataFromStorage(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         //here "with" is external and "request" is internal parameter
         
@@ -119,10 +119,8 @@ class ToDoListViewController: UITableViewController {
             print("Error fetching data from context ===== \(error) =====")
         }
         
-         tableView.reloadData()
+        tableView.reloadData()
     }
-    
-    
     
     func saveFiles() {
         
