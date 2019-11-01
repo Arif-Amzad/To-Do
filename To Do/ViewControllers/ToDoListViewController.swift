@@ -12,8 +12,15 @@ import CoreData
 class ToDoListViewController: UITableViewController {
     
     let cellID = "ToDoItemCell"
-
+    
     var itemArray = [Item]()
+    
+    var selectedCategory: Category? {
+        didSet {
+            
+            loadDataFromStorage()
+        }
+    }
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext //medium to read,update,destroy our data, through this we will comunicate with our persistent container
 
@@ -22,7 +29,9 @@ class ToDoListViewController: UITableViewController {
                 
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
-        loadDataFromStorage()
+        //loadDataFromStorage()
+        
+        navigationItem.title = selectedCategory?.name
     }
     
     
@@ -65,6 +74,45 @@ class ToDoListViewController: UITableViewController {
     
     
     
+    //MARK: - Data Manipulation Methods
+    func loadDataFromStorage(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        //here "with" is external and "request" is internal parameter
+        
+        // Item.fetchRequest() has been added later for the function which will work without parameter viewed in viewDidLoad
+
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = predicate {
+            
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        }
+        else {
+            request.predicate = categoryPredicate
+        }
+        
+        do {
+            itemArray = try context.fetch(request)
+        }catch {
+            print("Error fetching data from context ===== \(error) =====")
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func saveFiles() {
+        
+        do {
+            try context.save()
+        } catch {
+            print("Error saving context \(error)")
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    
+    
+    
     //MARK - Add New Items
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -81,6 +129,8 @@ class ToDoListViewController: UITableViewController {
                 newItem.title = textField.text
                 
                 newItem.done = false
+                
+                newItem.parentCategory = self.selectedCategory
                 
                 self.itemArray.append(newItem)
                 
@@ -105,33 +155,6 @@ class ToDoListViewController: UITableViewController {
             
         present(alert, animated: true, completion: nil)
     }
-    
-    
-    
-    //MARK: - Data Manipulation Methods
-    func loadDataFromStorage(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
-        //here "with" is external and "request" is internal parameter
-        
-        // Item.fetchRequest() has been added later for the function which will work without parameter viewed in viewDidLoad
-        do {
-            itemArray = try context.fetch(request)
-        }catch {
-            print("Error fetching data from context ===== \(error) =====")
-        }
-        
-        tableView.reloadData()
-    }
-    
-    func saveFiles() {
-        
-        do {
-            try context.save()
-        } catch {
-            print("Error saving context \(error)")
-        }
-        
-        self.tableView.reloadData()
-    }
 }
 
 
@@ -144,13 +167,11 @@ extension ToDoListViewController: UISearchBarDelegate {
         
         let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         
-        request.predicate = predicate
-        
         let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
         
         request.sortDescriptors = [sortDescriptor]
         
-        loadDataFromStorage(with: request)
+        loadDataFromStorage(with: request, predicate: predicate)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -164,8 +185,6 @@ extension ToDoListViewController: UISearchBarDelegate {
                 searchBar.resignFirstResponder()
             }
         }
-        
-        loadDataFromStorage()
     }
 }
 

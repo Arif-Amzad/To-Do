@@ -15,6 +15,8 @@ class CategoryViewController: UITableViewController {
     
     let cellID = "CategoryCell"
     
+    var indexNumber = Int()
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
@@ -50,7 +52,21 @@ class CategoryViewController: UITableViewController {
     
         tableView.deselectRow(at: indexPath, animated: true)
         
+        indexNumber = indexPath.row
+        
         performSegue(withIdentifier: "category2Items", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let destination = segue.destination as! ToDoListViewController
+        
+        //let indexPath = tableView.indexPathForSelectedRow
+        //it will identify which row is selected automatically
+    
+        destination.selectedCategory = categoryArray[indexNumber]
+        
+        
     }
     
     
@@ -95,7 +111,7 @@ class CategoryViewController: UITableViewController {
                 
                 let newCategory = Category(context: self.context)
                 
-                newCategory.name = textField.text
+                newCategory.name = textField.text!
                 
                 self.categoryArray.append(newCategory)
                 
@@ -120,8 +136,4 @@ class CategoryViewController: UITableViewController {
         
         present(alert, animated: true, completion: nil)
     }
-    
-    
-
-    
 }
